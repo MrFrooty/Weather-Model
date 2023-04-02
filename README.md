@@ -1,1 +1,4 @@
-# Weather-Model
+# Weather Prediction Model
+
+This is an introductory project to Machine Learning that I have undertaken. I have sourced the dataset, which is Rainfall over the past 115 years in India from kaggle.com. I preprocessed the data to only include the 2nd largest region of India and removed unnecessary rows/columns. I originally tried to create a neural network but I did not prepare enough so I decided to take on Linear Regression, which I was much more efficient with. I also tried to tinker with Polynomial Features, but I found out that this method was not as accurate as the Linear Regression one (although both were also very inaccurate). I will continue to  add more features to this project and I will try to increase how accurate it is. 
+I ultimately learned a lot through this project, including the usage of the SciKit and Pandas Library to help create this project. 
