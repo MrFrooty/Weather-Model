@@ -45,7 +45,9 @@ for month in range(12):
 mse = metrics.mean_squared_error(rainfall_test, rainfall_preds, multioutput='raw_values')
 for month, error in enumerate(mse):
     print(f"MSE for Month {month+1}: {error:.2f}")
-    
+   
+#Create a subplot that plots all the original and predicted values onto a plot for every month
+#with 4 plots in a total of 3 rows over an area of 12x9 inches.  
 fig, axs = plt.subplots(ncols = 4, nrows = 3, figsize=(12,9))
 fig.suptitle('Error difference between predicted and test values')
 for month in range(12):
