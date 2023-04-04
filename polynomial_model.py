@@ -5,6 +5,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn import metrics
 from sklearn.preprocessing import PolynomialFeatures
 
+from polynomial_degree import get_best_degree
+
 #Load dataset into file
 df = pd.read_csv('rainfall in india processed.csv')
 
@@ -16,7 +18,7 @@ rainfall = df.iloc[:, 1:].values
 train_size = int(len(df) * 0.8) // 12 * 12
 
 # Split the data into training and test sets
-poly = PolynomialFeatures(degree=3)
+poly = PolynomialFeatures(degree=get_best_degree('rainfall in india processed.csv'))
 years_poly = poly.fit_transform(years)
 years_train, rainfall_train = years_poly[:train_size], rainfall[:train_size]
 years_test, rainfall_test = years_poly[train_size:], rainfall[train_size:]

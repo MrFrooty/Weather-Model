@@ -14,7 +14,7 @@ rainfall = df.iloc[:, 1:].values
 # Calculate the train size as 80% of the len of df and then finding that value as the nearest multiple of 12 (seasonal pattern)
 train_size = int(len(df) * 0.8) // 12 * 12
 
-# Split the data into training and test setsf
+# Split the data into training and test sets
 years_train, rainfall_train = years[:train_size], rainfall[:train_size]
 years_test, rainfall_test = years[train_size:], rainfall[train_size:]
 
