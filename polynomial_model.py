@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn import metrics
+from sklearn.preprocessing import PolynomialFeatures
 
 #Load dataset into file
 df = pd.read_csv('rainfall in india processed.csv')
@@ -14,17 +15,20 @@ rainfall = df.iloc[:, 1:].values
 # Calculate the train size as 80% of the len of df and then finding that value as the nearest multiple of 12 (seasonal pattern)
 train_size = int(len(df) * 0.8) // 12 * 12
 
-# Split the data into training and test setsf
-years_train, rainfall_train = years[:train_size], rainfall[:train_size]
-years_test, rainfall_test = years[train_size:], rainfall[train_size:]
+# Split the data into training and test sets
+poly = PolynomialFeatures(degree=3)
+years_poly = poly.fit_transform(years)
+years_train, rainfall_train = years_poly[:train_size], rainfall[:train_size]
+years_test, rainfall_test = years_poly[train_size:], rainfall[train_size:]
 
 models = {}
 
 #Train an individual model for each month using ever year's dataset
 for month in range(12):
-    lin_reg = LinearRegression()
-    lin_reg.fit(years_train, rainfall_train[:, month])
-    models[month] = lin_reg
+    lin_reg_poly = LinearRegression()
+    lin_reg_poly.fit(years_train, rainfall_train[:, month])
+    models[month] = lin_reg_poly
+    #rainfall_preds = lin_reg_poly.predict(poly.fit_transform(years_test))
 
 #Predict the values for each month and output into an array
 rainfall_preds = np.zeros_like(rainfall_test)
