@@ -2,12 +2,12 @@ import pandas as pd
 import numpy as np
 
 #Read file using pandas library
-df = pd.read_csv('rainfall in india 1901-2015.csv')
+df = pd.read_csv('SF_Rainfall.csv')
 
-#Clean up data set to only include year number and the 12 months as the columns and the data values from 
-#the MADHYA MAHARASHTRA subdivision. This is the 2nd largest state in India
-df = df.drop(['index', 'SUBDIVISION','ANNUAL', 'Jan-Feb', 'Mar-May', 'Jun-Sep', 'Oct-Dec'], axis=1)
-df = df.loc[2622:2736]
+#Clean up data set
+df = df.drop(['Season', '-', 'SecondYear'], axis=1)
+df = df[['FirstYear', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']]
+df = df.drop([0, len(df)-1])
 
 #Process the data into a new csv file
-df.to_csv('rainfall in india processed.csv', index=False)
+df.to_csv('modified_data.csv', index=False)
