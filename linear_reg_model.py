@@ -5,7 +5,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn import metrics
 
 #Load dataset into file
-df = pd.read_csv('rainfall in india processed.csv')
+df = pd.read_csv('modified_data.csv')
 
 #Create correct datavalues
 years = df.iloc[:, 0].values.reshape(-1,1)
