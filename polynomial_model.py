@@ -3,12 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn import metrics
-from sklearn.preprocessing import PolynomialFeatures
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 
 from polynomial_degree import get_best_degree
 
 #Load dataset into file
-df = pd.read_csv('rainfall in india processed.csv')
+df = pd.read_csv('modified_data.csv')
 
 #Create correct datavalues
 years = df.iloc[:, 0].values.reshape(-1,1)
@@ -18,25 +18,30 @@ rainfall = df.iloc[:, 1:].values
 train_size = int(len(df) * 0.8) // 12 * 12
 
 # Split the data into training and test sets
-poly = PolynomialFeatures(degree=get_best_degree('rainfall in india processed.csv'))
-years_poly = poly.fit_transform(years)
-years_train, rainfall_train = years_poly[:train_size], rainfall[:train_size]
-years_test, rainfall_test = years_poly[train_size:], rainfall[train_size:]
+poly = PolynomialFeatures(degree=get_best_degree('modified_data.csv'), include_bias=False)
+#poly = PolynomialFeatures(degree=3, include_bias=False)
+
+years_train, rainfall_train = years[:train_size], rainfall[:train_size]
+years_test, rainfall_test = years[train_size:], rainfall[train_size:]
+
+years_train_poly = poly.fit_transform(years_train)
+years_test_poly = poly.fit_transform(years_test)
+    
+poly.fit(years_train_poly, rainfall_train)
 
 models = {}
 
 #Train an individual model for each month using ever year's dataset
 for month in range(12):
-    lin_reg_poly = LinearRegression()
-    lin_reg_poly.fit(years_train, rainfall_train[:, month])
-    models[month] = lin_reg_poly
-    #rainfall_preds = lin_reg_poly.predict(poly.fit_transform(years_test))
+    model = LinearRegression()
+    model.fit(years_train_poly, rainfall_train[:, month])
+    models[month] = model
 
 #Predict the values for each month and output into an array
 rainfall_preds = np.zeros_like(rainfall_test)
 for month in range(12):
     model = models[month]
-    rainfall_preds[:, month] = model.predict(years_test)
+    rainfall_preds[:, month] = model.predict(years_test_poly)
 
 #First calculate the mse based on predicted and test values and output to an array
 #Loop through that array while keeping track of the index and print out error in correspondence to the correct month

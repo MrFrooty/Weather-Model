@@ -7,9 +7,9 @@ import pandas as pd
 
 def get_best_degree(filename):
     df = pd.read_csv(filename)
-    
+
     years = df.iloc[:, 0].values.reshape(-1,1)
-    rainfall = df.iloc[:, 1:].values.reshape(-1,1)
+    rainfall = df.iloc[:, 1:].values
 
     #Choose number of folds
     k=5
@@ -31,31 +31,52 @@ def get_best_degree(filename):
         #Iterate over the folds
         for j, (train_index, test_index) in enumerate(kf.split(years)):
             #Split the data into training and test sets for the current fold
+            # years_train, years_test = years[train_index], years[test_index]
+            # rainfall_train, rainfall_test = rainfall[train_index], rainfall[test_index]
+            
+            # scaler = StandardScaler()
+            # year_train_scaled = scaler.fit_transform(years_train)
+            # year_test_scaled = scaler.transform(years_test)
+
+            # #Transform the training and test data using the polynomial features object
+            # year_train_poly = poly.fit_transform(year_train_scaled)
+            # year_test_poly = poly.transform(year_test_scaled)
+
+            # #Fit & predict the model on the training data
+            # model = LinearRegression()
+            # model.fit(year_train_poly, rainfall_train)
+            # rainfall_pred_poly = model.predict(year_test_poly)
+            
+            # #Invert the transformation on the rainfall_pred_poly values
+            # rainfall_pred = scaler.inverse_transform(rainfall_pred_poly.reshape(-1, 1)).ravel()
             years_train, years_test = years[train_index], years[test_index]
             rainfall_train, rainfall_test = rainfall[train_index], rainfall[test_index]
-            
-            scaler = StandardScaler()
-            year_train_scaled = scaler.fit_transform(years_train)
-            year_test_scaled = scaler.transform(years_test)
 
-            #Transform the training and test data using the polynomial features object
-            year_train_poly = poly.fit_transform(year_train_scaled)
-            year_test_poly = poly.transform(year_test_scaled)
+            years_train_poly = poly.fit_transform(years_train)
+            years_test_poly = poly.fit_transform(years_test)
+                
+            poly.fit(years_train_poly, rainfall_train)
 
-            #Fit & predict the model on the training data
-            model = LinearRegression()
-            model.fit(year_train_poly, rainfall_train)
-            rainfall_pred_poly = model.predict(year_test_poly)
-            
-            #Invert the transformation on the rainfall_pred_poly values
-            rainfall_pred = scaler.inverse_transform(rainfall_pred_poly.reshape(-1, 1)).ravel()
+            models = {}
+
+            #Train an individual model for each month using ever year's dataset
+            for month in range(12):
+                model = LinearRegression()
+                model.fit(years_train_poly, rainfall_train[:, month])
+                models[month] = model
+
+            #Predict the values for each month and output into an array
+            rainfall_preds = np.zeros_like(rainfall_test)
+            for month in range(12):
+                model = models[month]
+                rainfall_preds[:, month] = model.predict(years_test_poly)
             
             #Calculate the mean squared error for the test data
-            mse_scores[i, j] = mean_squared_error(rainfall_test, rainfall_pred)
+            mse_scores[i, j] = mean_squared_error(rainfall_test, rainfall_preds, multioutput='raw_values')
             
     # Calculate the average mean squared error across all folds for each degree of the polynomial
     mean_mse_scores = np.mean(mse_scores, axis=1)
-    # print(mean_mse_scores)
+    print(mse_scores)
 
     # Find the index of the degree that provides the best performance
     best_degree_index = np.argmin(mean_mse_scores)

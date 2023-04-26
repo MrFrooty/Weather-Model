@@ -29,6 +29,7 @@ for month in range(12):
 #Predict the values for each month and output into an array
 rainfall_preds = np.zeros_like(rainfall_test)
 for month in range(12):
+    print(years_test)
     model = models[month]
     rainfall_preds[:, month] = model.predict(years_test)
 
